@@ -33,10 +33,13 @@ class WriteRoomSerializer(serializers.Serializer):
     #     else:
     #         return beds
 
+    def update(self, instance, validated_data):
+        print(validated_data)
+
     def validate(self, data):
-        check_in = data.get("check_in")
-        check_out = data.get("check_out")
-        if check_in == check_out:
-            raise serializers.ValidationError("Not enough time between changes")
-        else:
-            return data
+        if not self.instance:
+            check_in = data.get("check_in")
+            check_out = data.get("check_out")
+            if check_in == check_out:
+                raise serializers.ValidationError("Not enough time between changes")
+        return data
