@@ -25,7 +25,7 @@ class RoomsView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class RoomView(APIView):
-    def get_room(pk):
+    def get_room(self,pk):
         try:
             room = Room.objects.get(pk=pk)
             return room
@@ -47,7 +47,8 @@ class RoomView(APIView):
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
             serializer = WriteRoomSerializer(instance=room, data=request.data, partial=True)
             if serializer.is_valid():
-                serializer.save()
+                room = serializer.save()
+                return Response(room, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
