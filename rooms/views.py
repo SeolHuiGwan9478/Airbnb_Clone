@@ -1,6 +1,8 @@
 from os import stat
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
+from rest_framework.pagination import PageNumberPagination
 from rest_framework import status
 from .models import Room
 from .serializers import RoomSerializer, RoomSerializer
@@ -9,9 +11,12 @@ from .serializers import RoomSerializer, RoomSerializer
 class RoomsView(APIView):
     # GET
     def get(self,request):
-        rooms = Room.objects.all()[:5]
-        serializer = RoomSerializer(rooms, many=True).data
-        return Response(data=serializer)
+        paginator = PageNumberPagination()
+        paginator.page_size = 20
+        rooms = Room.objects.all()
+        results = paginator.paginate_queryset(rooms, request)
+        serializer = RoomSerializer(results, many=True).data
+        return paginator.get_paginated_response(data=serializer)
     #POST
     def post(self,request):
         if not request.user.is_authenticated:
@@ -64,3 +69,12 @@ class RoomView(APIView):
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(["GET"])
+def room_search(request):
+    paginator = PageNumberPagination()
+    paginator.page_size = 10
+    rooms = Room.objects.filter()
+    results = paginator.paginate_queryset(rooms)
+    serializers = RoomSerializer(results, many=True).data
+    return paginator.get_paginated_response(results)

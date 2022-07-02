@@ -1,9 +1,9 @@
+import jwt
 from base64 import decode
 from django.contrib.auth.models import User
 from rest_framework import authentication
 from rest_framework import exceptions
 from django.conf import settings
-import jwt
 from users.models import User
 
 class JWTAuthentication(authentication.BaseAuthentication):
