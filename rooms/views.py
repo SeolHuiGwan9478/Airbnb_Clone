@@ -1,3 +1,4 @@
+from multiprocessing import context
 from os import stat
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,8 +16,8 @@ class RoomsView(APIView):
         paginator.page_size = 20
         rooms = Room.objects.all()
         results = paginator.paginate_queryset(rooms, request)
-        serializer = RoomSerializer(results, many=True).data
-        return paginator.get_paginated_response(data=serializer)
+        serializer = RoomSerializer(results, many=True, context={"request":request})
+        return paginator.get_paginated_response(data=serializer.data)
     #POST
     def post(self,request):
         if not request.user.is_authenticated:
